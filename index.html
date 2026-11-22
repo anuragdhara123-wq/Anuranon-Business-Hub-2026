@@ -83,7 +83,7 @@ c.innerHTML=`
 <p>This Month's Income: ₹${monthly}</p>
 </div>
 <div class="card"><h2>Upcoming Weddings</h2>
-${upcoming.map(x=>`<div class="item"><b>${x[0]} & ${x[1]}</b><br>Venue: ${x[2]}<br>Date: ${x[3]}<br>Package: ₹${x[4]}<br>Advance: ₹${x[5]}<br>Status: ${x[6]}</div>`).join('')||'No upcoming bookings yet.'}
+${upcoming.map(x=>`<div class="item"><b>${x[0]} & ${x[1]}</b><br>Venue: ${x[2]}<br>Date: ${x[3]}<br>Package: ₹${x[4]}<br>Advance: ₹${x[5]}<br>Remaining Balance: ₹${Math.max(0,Number(x[4]||0)-Number(x[5]||0))}<br>Status: ${x[6]}</div>`).join('')||'No upcoming bookings yet.'}
 </div>`;
 return;
 }
