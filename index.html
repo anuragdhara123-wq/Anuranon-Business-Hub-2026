@@ -57,7 +57,7 @@ page('dashboard');
 }else alert('Incorrect PIN');
 }function page(p){
 let c=document.getElementById('content');
-let totalBookings=db.bookings.reduce((s,x)=>s+Number(x[3]||0),0);
+let totalBookings=db.bookings.reduce((s,x)=>s+Number(x[4]||0),0);
 let totalPaid=db.payments.reduce((s,x)=>s+Number(x[1]||0),0);
 let now=new Date();
 let month=now.getMonth(),year=now.getFullYear();
@@ -68,9 +68,9 @@ return !isNaN(d)&&d.getMonth()===month&&d.getFullYear()===year;
 
 if(p==='dashboard'){
 let upcoming=db.bookings.filter(x=>{
-let d=new Date(x[2]);
+let d=new Date(x[3]);
 return !isNaN(d)&&d>=new Date(now.toDateString());
-}).sort((a,b)=>new Date(a[2])-new Date(b[2])).slice(0,5);
+}).sort((a,b)=>new Date(a[3])-new Date(b[3])).slice(0,5);
 c.innerHTML=`
 <div class="card">
 <h2>Business Dashboard</h2>
@@ -82,7 +82,7 @@ c.innerHTML=`
 <p>This Month's Income: ₹${monthly}</p>
 </div>
 <div class="card"><h2>Upcoming Weddings</h2>
-${upcoming.map(x=>`<div class="item">${x[0]} — ${x[1]} — ${x[2]}</div>`).join('')||'No upcoming bookings yet.'}
+${upcoming.map(x=>`<div class="item"><b>${x[0]} & ${x[1]}</b><br>Venue: ${x[2]}<br>Date: ${x[3]}<br>Package: ₹${x[4]}<br>Advance: ₹${x[5]}<br>Status: ${x[6]}</div>`).join('')||'No upcoming bookings yet.'}
 </div>`;
 return;
 }
@@ -98,7 +98,7 @@ return;
 
 let fields={
 clients:['Client Name','Phone','Event Date'],
-bookings:['Client Name','Event','Wedding Date','Booking Amount'],
+bookings:['Bride Name','Groom Name','Wedding Venue','Wedding Date','Total Package Price','Advance Payment','Booking Status'],
 payments:['Client Name','Amount Received','Payment Date'],
 packages:['Package Name','Price','Package Details'],
 team:['Member Name','Role','Phone'],
