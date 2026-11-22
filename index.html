@@ -1,38 +1,36 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Anuranon Business Hub</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Anuranon Business Hub 2026</title>
 <style>
-body{margin:0;background:#101827;color:white;font-family:Arial}
+*{box-sizing:border-box}
+body{margin:0;background:#101827;color:#fff;font-family:Arial}
 header{background:#202e46;padding:20px;font-size:22px;font-weight:bold}
-main{padding:15px;max-width:800px;margin:auto}
+main{padding:15px;max-width:900px;margin:auto}
 .card{background:#202e46;padding:18px;margin:12px 0;border-radius:12px}
 button{background:#d9ad63;border:0;padding:12px;margin:5px;border-radius:7px;font-weight:bold}
-input{display:block;width:95%;padding:12px;margin:10px 0;border-radius:6px}
+input,select{display:block;width:100%;padding:12px;margin:10px 0;border-radius:6px}
 nav{display:flex;flex-wrap:wrap}
 h2{color:#e8c17d}
+small{color:#bbc7d8}
+.item{padding:12px;border-bottom:1px solid #526078}
 </style>
 </head>
 <body>
-<header>ANURANON CREATIONS</header>
+<header>✦ ANURANON CREATIONS</header>
 <main>
 <div id="login" class="card">
 <h2>Welcome Back</h2>
-<p>Photography Business Hub</p>
+<p>Business Management Hub</p>
 <input id="pin" type="password" placeholder="Enter PIN">
 <button onclick="login()">LOGIN</button>
-<p>Default PIN: 2580</p>
+<small>Default PIN: 2580</small>
 </div>
 <div id="app" style="display:none">
-<div class="card">
-<h2>Business Dashboard</h2>
-<p>Clients: <span id="nc">0</span></p>
-<p>Bookings: <span id="nb">0</span></p>
-<p>Payments: ₹<span id="np">0</span></p>
-</div>
 <nav>
+<button onclick="page('dashboard')">Dashboard</button>
 <button onclick="page('clients')">Clients</button>
 <button onclick="page('bookings')">Bookings</button>
 <button onclick="page('payments')">Payments</button>
@@ -40,52 +38,131 @@ h2{color:#e8c17d}
 <button onclick="page('team')">Team</button>
 <button onclick="page('leads')">Leads</button>
 <button onclick="page('finance')">Finance</button>
+<button onclick="page('settings')">Settings</button>
+<nav>
 <button onclick="page('dashboard')">Dashboard</button>
+<button onclick="page('clients')">Clients</button>
+<button onclick="page('bookings')">Bookings</button>
+<button onclick="page('payments')">Payments</button>
+<button onclick="page('packages')">Packages</button>
+<button onclick="page('team')">Team</button>
+<button onclick="page('leads')">Leads</button>
+<button onclick="page('finance')">Finance</button>
+<button onclick="page('settings')">Settings</button>
 </nav>
-<div id="content" class="card"></div>
+<div id="content"></div>
 </div>
 </main>
 <script>
-let db=JSON.parse(localStorage.getItem('anuranon2026')||'{}');
+const KEY='anuranon2026';
+let db=JSON.parse(localStorage.getItem(KEY)||'{}');
 ['clients','bookings','payments','packages','team','leads','finance'].forEach(k=>{if(!db[k])db[k]=[]});
 db.pin=db.pin||'2580';
-function save(){localStorage.setItem('anuranon2026',JSON.stringify(db))}
+function save(){localStorage.setItem(KEY,JSON.stringify(db))}
 function login(){
 if(document.getElementById('pin').value===db.pin){
-save();
 document.getElementById('login').style.display='none';
 document.getElementById('app').style.display='block';
 page('dashboard');
-}else alert('Wrong PIN');
-}
-function page(p){
+}else alert('Incorrect PIN');
+}function page(p){
 let c=document.getElementById('content');
+let totalBookings=db.bookings.reduce((s,x)=>s+Number(x[3]||0),0);
+let totalPaid=db.payments.reduce((s,x)=>s+Number(x[1]||0),0);
+let now=new Date();
+let month=now.getMonth(),year=now.getFullYear();
+let monthly=db.payments.filter(x=>{
+let d=new Date(x[2]);
+return !isNaN(d)&&d.getMonth()===month&&d.getFullYear()===year;
+}).reduce((s,x)=>s+Number(x[1]||0),0);
+
 if(p==='dashboard'){
-document.getElementById('nc').innerText=db.clients.length;
-document.getElementById('nb').innerText=db.bookings.length;
-document.getElementById('np').innerText=db.payments.reduce((s,x)=>s+Number(x.amount||0),0);
-c.innerHTML='<h2>Welcome to Anuranon Business Hub</h2><p>Your business management dashboard is ready.</p>';
+let upcoming=db.bookings.filter(x=>{
+let d=new Date(x[2]);
+return !isNaN(d)&&d>=new Date(now.toDateString());
+}).sort((a,b)=>new Date(a[2])-new Date(b[2])).slice(0,5);
+c.innerHTML=`
+<div class="card">
+<h2>Business Dashboard</h2>
+<p>Total Clients: ${db.clients.length}</p>
+<p>Total Bookings: ${db.bookings.length}</p>
+<p>Booking Value: ₹${totalBookings}</p>
+<p>Payments Received: ₹${totalPaid}</p>
+<p>Pending Payments: ₹${Math.max(0,totalBookings-totalPaid)}</p>
+<p>This Month's Income: ₹${monthly}</p>
+</div>
+<div class="card"><h2>Upcoming Weddings</h2>
+${upcoming.map(x=>`<div class="item">${x[0]} — ${x[1]} — ${x[2]}</div>`).join('')||'No upcoming bookings yet.'}
+</div>`;
 return;
 }
+
+if(p==='settings'){
+c.innerHTML=`<div class="card"><h2>Settings</h2>
+<input id="newpin" placeholder="Enter new PIN">
+<button onclick="changePin()">Change PIN</button>
+<button onclick="backup()">Download Backup</button>
+</div>`;
+return;
+}
+
 let fields={
 clients:['Client Name','Phone','Event Date'],
-bookings:['Client Name','Event','Date','Amount'],
-payments:['Client Name','Amount','Date'],
-packages:['Package Name','Price','Details'],
+bookings:['Client Name','Event','Wedding Date','Booking Amount'],
+payments:['Client Name','Amount Received','Payment Date'],
+packages:['Package Name','Price','Package Details'],
 team:['Member Name','Role','Phone'],
-leads:['Lead Name','Phone','Source','Status'],
-finance:['Description','Amount','Type','Date']
+leads:['Lead Name','Phone','Source','Follow-up Status'],
+finance:['Description','Amount','Income or Expense','Date']
 };
 let names=fields[p];
-c.innerHTML='<h2>'+p.toUpperCase()+'</h2><form id="f">'+names.map((n,i)=>'<input placeholder="'+n+'" required id="v'+i+'">').join('')+'<button>Save Record</button></form><h2>Saved Records</h2><div id="list"></div>';
-document.getElementById('f').onsubmit=function(e){
+c.innerHTML=`<div class="card"><h2>${p.toUpperCase()}</h2>
+<form id="recordForm">
+${names.map((n,i)=>`<input id="v${i}" placeholder="${n}" required>`).join('')}
+<button type="submit">Save Record</button>
+</form></div>
+<div class="card"><h2>Saved Records</h2><div id="list"></div></div>`;
+
+document.getElementById('recordForm').onsubmit=function(e){
 e.preventDefault();
 let a=names.map((n,i)=>document.getElementById('v'+i).value);
-db[p].push(a);save();page(p);
+db[p].push(a);
+save();
+page(p);
 };
-document.getElementById('list').innerHTML=db[p].map((a,i)=>'<p>'+a.join(' | ')+' <button onclick="del(\''+p+'\','+i+')">Delete</button></p>').join('')||'No records yet';
+
+document.getElementById('list').innerHTML=
+db[p].map((a,i)=>`<div class="item">${a.join(' | ')}
+<button onclick="del('${p}',${i})">Delete</button></div>`).join('')||'No records yet.';
 }
-function del(p,i){db[p].splice(i,1);save();page(p)}
+
+function del(p,i){
+if(confirm('Delete this record?')){
+db[p].splice(i,1);
+save();
+page(p);
+}
+}function changePin(){
+let p=document.getElementById('newpin').value;
+if(p.length<4){
+alert('PIN must be at least 4 characters');
+return;
+}
+db.pin=p;
+save();
+alert('PIN changed successfully');
+}
+
+function backup(){
+let file=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
+let link=document.createElement('a');
+link.href=URL.createObjectURL(file);
+link.download='Anuranon-Business-Backup.json';
+link.click();
+URL.revokeObjectURL(link.href);
+}
+
+save();
 </script>
 </body>
 </html>
