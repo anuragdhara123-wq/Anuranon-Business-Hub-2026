@@ -17,6 +17,7 @@ h2{color:#e8c17d}
 small{color:#bbc7d8}
 .item{padding:12px;border-bottom:1px solid #526078}
 </style>
+<link rel="manifest" href="manifest.json">
 </head>
 <body>
 <header>✦ ANURANON CREATIONS</header>
@@ -153,6 +154,13 @@ URL.revokeObjectURL(link.href);
 }
 
 save();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js');
+  });
+}
 </script>
 </body>
 </html>
