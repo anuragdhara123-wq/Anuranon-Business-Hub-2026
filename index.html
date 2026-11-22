@@ -99,7 +99,7 @@ return;
 
 let fields={
 clients:['Client Name','Phone','Event Date'],
-bookings:['Bride Name','Groom Name','Wedding Venue','Wedding Date','Total Package Price','Advance Payment','Booking Status'],
+bookings:['Bride Name','Groom Name','Wedding Venue','Wedding Date','Total Package Price','Advance Payment','Booking Status','Linked Client'],
 payments:['Client Name','Amount Received','Payment Date'],
 packages:['Package Name','Price','Package Details'],
 team:['Member Name','Role','Phone'],
@@ -109,7 +109,7 @@ finance:['Description','Amount','Income or Expense','Date']
 let names=fields[p];
 c.innerHTML=`<div class="card"><h2>${p.toUpperCase()}</h2>
 <form id="recordForm">
-${names.map((n,i)=>`<input id="v${i}" placeholder="${n}" required>`).join('')}
+${names.map((n,i)=>p==='bookings'&&i===7?`<select id="v${i}" required><option value="">Select Client</option>${db.clients.map(x=>`<option value="${x[0]}">${x[0]}</option>`).join('')}</select>`:`<input id="v${i}" placeholder="${n}" required>`).join('')}
 <button type="submit">Save Record</button>
 </form></div>
 <div class="card"><h2>Saved Records</h2><div id="list"></div></div>`;
