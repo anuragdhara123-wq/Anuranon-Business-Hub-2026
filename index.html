@@ -117,16 +117,31 @@ ${names.map((n,i)=>`<input id="v${i}" placeholder="${n}" required>`).join('')}
 document.getElementById('recordForm').onsubmit=function(e){
 e.preventDefault();
 let a=names.map((n,i)=>document.getElementById('v'+i).value);
+let idx=this.dataset.editIndex;
+if(idx!==undefined){
+db[p][Number(idx)]=a;
+}else{
 db[p].push(a);
+}
 save();
 page(p);
 };
 
 document.getElementById('list').innerHTML=
 db[p].map((a,i)=>`<div class="item">${a.join(' | ')}
+<button onclick="edit('${p}',${i})">Edit</button>
 <button onclick="del('${p}',${i})">Delete</button></div>`).join('')||'No records yet.';
 }
-
+function edit(p,i){
+let a=db[p][i];
+page(p);
+a.forEach((v,j)=>{
+document.getElementById('v'+j).value=v;
+});
+let f=document.getElementById('recordForm');
+f.dataset.editIndex=i;
+f.querySelector('button[type="submit"]').textContent='Update Record';
+}
 function del(p,i){
 if(confirm('Delete this record?')){
 db[p].splice(i,1);
