@@ -114,18 +114,34 @@ ${names.map((n,i)=>p==='bookings'&&i===7?`<select id="v${i}" required><option va
 </form></div>
 <div class="card"><h2>Saved Records</h2><div id="list"></div></div>`;
 
+
 document.getElementById('recordForm').onsubmit=function(e){
 e.preventDefault();
 let a=names.map((n,i)=>document.getElementById('v'+i).value);
 let idx=this.dataset.editIndex;
+
 if(idx!==undefined){
 db[p][Number(idx)]=a;
 }else{
 db[p].push(a);
 }
+
+if(p==='payments'){
+let paymentNo=idx!==undefined?Number(idx)+1:db.payments.length;
+let description='Payment #'+paymentNo+' - '+a[0];
+let fi=db.finance.findIndex(x=>String(x[0]).startsWith('Payment #'+paymentNo+' - '));
+let entry=[description,a[1],'Income',a[2]];
+if(fi>=0){
+db.finance[fi]=entry;
+}else{
+db.finance.push(entry);
+}
+}
+
 save();
 page(p);
 };
+
 
 document.getElementById('list').innerHTML=
 db[p].map((a,i)=>`<div class="item">${a.join(' | ')}
