@@ -50,13 +50,16 @@ let db=JSON.parse(localStorage.getItem(KEY)||'{}');
 ['clients','bookings','payments','packages','team','leads','finance'].forEach(k=>{if(!db[k])db[k]=[]});
 db.pin=db.pin||'2580';
 function save(){localStorage.setItem(KEY,JSON.stringify(db))}
-function login(){
-if(document.getElementById('pin').value===db.pin){
-document.getElementById('login').style.display='none';
-document.getElementById('app').style.display='block';
-page('dashboard');
-}else alert('Incorrect PIN');
-}function page(p){
+window.login = function(){
+  if(document.getElementById('pin').value===db.pin){
+    document.getElementById('login').style.display='none';
+    document.getElementById('app').style.display='block';
+    page('dashboard');
+  }else{
+    alert('Incorrect PIN');
+  }
+};
+function page(p){
 let c=document.getElementById('content');
 let totalBookings=db.bookings.reduce((s,x)=>s+Number(x[4]||0),0);
 let totalPaid=db.bookings.reduce((s,x)=>s+Number(x[5]||0),0)+db.payments.reduce((s,x)=>s+Number(x[1]||0),0);
