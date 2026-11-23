@@ -561,7 +561,7 @@ w.downloadDigitalInvoice = function(){
     buttons.forEach(button => button.style.display = '');
   }).catch(error => {
     buttons.forEach(button => button.style.display = '');
-    alert('PDF creation failed. Please try again.');
+    alert('PDF Error: ' + error.message);
     console.error(error);
   });
 };
