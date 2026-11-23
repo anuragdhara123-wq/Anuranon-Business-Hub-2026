@@ -201,8 +201,8 @@ html+='<p>No weddings found for this client.</p>';
 }
 
 bookings.forEach(b=>{
-let extra=db.payments.filter(p=>Number(p[3])===b.index)
-.reduce((s,p)=>s+Number(p[1]||0),0);
+let extraPayments=db.payments.filter(p=>Number(p[3])===b.index);
+let extra=extraPayments.reduce((s,p)=>s+Number(p[1]||0),0);
 let advance=Number(b[5]||0);
 let total=Number(b[4]||0);
 let paid=advance+extra;
@@ -217,7 +217,9 @@ html+=`
 <tr><th>Description</th><th>Amount</th></tr>
 <tr><td>Package Value</td><td>₹${total.toLocaleString('en-IN')}</td></tr>
 <tr><td>Advance Payment</td><td>₹${advance.toLocaleString('en-IN')}</td></tr>
-<tr><td>Additional Payments</td><td>₹${extra.toLocaleString('en-IN')}</td></tr>
+<tr><td colspan="2"><b>Additional Payment Details</b></td></tr>
+${extraPayments.map(p=>`<tr><td>${p[2]}</td><td>₹${Number(p[1]||0).toLocaleString('en-IN')}</td></tr>`).join('')}
+<tr><td><b>Total Additional Payments</b></td><td>₹${extra.toLocaleString('en-IN')}</td></tr>
 <tr><th>Total Received</th><th>₹${paid.toLocaleString('en-IN')}</th></tr>
 <tr><th>Remaining Balance</th><th>₹${balance.toLocaleString('en-IN')}</th></tr>
 </table>
