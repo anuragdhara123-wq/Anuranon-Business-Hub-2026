@@ -59,7 +59,7 @@ page('dashboard');
 }function page(p){
 let c=document.getElementById('content');
 let totalBookings=db.bookings.reduce((s,x)=>s+Number(x[4]||0),0);
-let totalPaid=db.payments.reduce((s,x)=>s+Number(x[1]||0),0);
+let totalPaid=db.bookings.reduce((s,x)=>s+Number(x[5]||0),0)+db.payments.reduce((s,x)=>s+Number(x[1]||0),0);
 let now=new Date();
 let month=now.getMonth(),year=now.getFullYear();
 let monthly=db.payments.filter(x=>{
