@@ -147,10 +147,93 @@ page(p);
 document.getElementById('list').innerHTML=
 db[p].map((a,i)=>`<div class="item">${a.join(' | ')}
 ${p==='bookings'?`<button onclick="invoice(${i})">Generate Invoice</button>`:''}
+${p==='clients'?`<button onclick="clientHistory(${i})">Payment History</button>`:''}
 <button onclick="edit('${p}',${i})">Edit</button>
 <button onclick="del('${p}',${i})">Delete</button></div>`).join('')||'No records yet.';
 }
+function clientHistory(i){
+let client=db.clients[i];
+let bookings=db.bookings
+.map((b,index)=>({...b,index}))
+.filter(b=>b[7]===client[0]);
 
+let html=`
+<html>
+<head>
+<title>Client Payment History</title>
+<style>
+body{
+font-family:Georgia,serif;
+background:#11100e;
+color:#f5e6c4;
+padding:25px;
+}
+h2{color:#d8b66a;text-align:center}
+.card{
+border:1px solid #c6a45c;
+padding:18px;
+margin:18px 0;
+background:#201d17;
+}
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
+}
+td,th{
+border:1px solid #a98a4b;
+padding:10px;
+text-align:left;
+}
+th{background:#80652f}
+</style>
+</head>
+<body>
+<h2>ANURANON CREATIONS</h2>
+<h3>Client Payment History</h3>
+<div class="card">
+<b>Client:</b> ${client[0]}<br>
+<b>Phone:</b> ${client[1]}
+</div>`;
+
+if(bookings.length===0){
+html+='<p>No weddings found for this client.</p>';
+}
+
+bookings.forEach(b=>{
+let extra=db.payments.filter(p=>Number(p[3])===b.index)
+.reduce((s,p)=>s+Number(p[1]||0),0);
+let advance=Number(b[5]||0);
+let total=Number(b[4]||0);
+let paid=advance+extra;
+let balance=Math.max(0,total-paid);
+
+html+=`
+<div class="card">
+<h3>${b[0]} & ${b[1]}</h3>
+<p>Wedding Date: ${b[3]}</p>
+<p>Venue: ${b[2]}</p>
+<table>
+<tr><th>Description</th><th>Amount</th></tr>
+<tr><td>Package Value</td><td>₹${total.toLocaleString('en-IN')}</td></tr>
+<tr><td>Advance Payment</td><td>₹${advance.toLocaleString('en-IN')}</td></tr>
+<tr><td>Additional Payments</td><td>₹${extra.toLocaleString('en-IN')}</td></tr>
+<tr><th>Total Received</th><th>₹${paid.toLocaleString('en-IN')}</th></tr>
+<tr><th>Remaining Balance</th><th>₹${balance.toLocaleString('en-IN')}</th></tr>
+</table>
+</div>`;
+});
+
+html+='</body></html>';
+
+let w=window.open('','_blank');
+if(!w){
+alert('Please allow pop-ups for this website.');
+return;
+}
+w.document.write(html);
+w.document.close();
+}
 function invoice(i){
 let b=db.bookings[i];
 let client=db.clients.find(x=>x[0]===b[7]);
