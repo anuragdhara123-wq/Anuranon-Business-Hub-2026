@@ -517,6 +517,7 @@ Anuranon Creations
 </html>
 `);
 
+
 w.downloadDigitalInvoice = function(){
   const element = w.document.body;
   const buttons = element.querySelectorAll('button');
@@ -524,47 +525,31 @@ w.downloadDigitalInvoice = function(){
   buttons.forEach(button => button.style.display = 'none');
 
   w.html2pdf().set({
+    margin: 0,
+    filename: 'Anuranon-Creations-Invoice.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
     html2canvas: {
-      scale: 2,
+      scale: 1.5,
       useCORS: true,
       backgroundColor: '#11100e',
       windowWidth: 850
-    }
-  }).from(element).toCanvas().get('canvas').then(canvas => {
-
-    const pdf = new w.jspdf.jsPDF({
-      orientation: 'portrait',
+    },
+    jsPDF: {
       unit: 'mm',
-      format: 'a4'
-    });
-
-    const pageWidth = 210;
-    const pageHeight = 297;
-
-    const ratio = Math.min(
-      pageWidth / canvas.width,
-      pageHeight / canvas.height
-    );
-
-    const imgWidth = canvas.width * ratio;
-    const imgHeight = canvas.height * ratio;
-
-    const x = (pageWidth - imgWidth) / 2;
-    const y = (pageHeight - imgHeight) / 2;
-
-    const image = canvas.toDataURL('image/jpeg', 0.98);
-
-    pdf.addImage(image, 'JPEG', x, y, imgWidth, imgHeight);
-    pdf.save('Anuranon-Creations-Invoice.pdf');
-
-  }).then(() => {
+      format: 'a4',
+      orientation: 'portrait'
+    },
+    pagebreak: {
+      mode: ['avoid-all']
+    }
+  }).from(element).save().then(() => {
     buttons.forEach(button => button.style.display = '');
   }).catch(error => {
     buttons.forEach(button => button.style.display = '');
     alert('PDF Error: ' + error.message);
-    console.error(error);
   });
 };
+
 
 w.document.close();
 }
