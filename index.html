@@ -160,6 +160,8 @@ let extra=payments.reduce((s,x)=>s+Number(x[1]||0),0);
 let total=Number(b[4]||0);
 let paid=advance+extra;
 let balance=Math.max(0,total-paid);
+let paymentStatus=balance===0&&total>0?'PAID IN FULL':paid>0?'PARTIALLY PAID':'PAYMENT PENDING';
+let stampClass=balance===0&&total>0?'paid':paid>0?'partial':'pending';
 let today=new Date().toLocaleDateString('en-IN');
 let invoiceNo='ANU-'+new Date().getFullYear()+'-'+String(i+1).padStart(3,'0');
 
@@ -282,7 +284,32 @@ margin-top:25px;
 font-weight:bold;
 font-size:15px;
 }
+.payment-stamp{
+display:table;
+margin:20px auto;
+padding:12px 25px;
+border:3px double;
+font-size:20px;
+font-weight:bold;
+letter-spacing:2px;
+text-align:center;
+transform:rotate(-3deg);
+}
 
+.paid{
+color:#65c98b;
+border-color:#65c98b;
+}
+
+.partial{
+color:#e4c477;
+border-color:#e4c477;
+}
+
+.pending{
+color:#ed7777;
+border-color:#ed7777;
+}
 @media print{
 html,body{
 background:#11100e!important;
@@ -304,6 +331,9 @@ border:3px double #c6a45c;
 <div class="header">
 <img src="ChatGPT%20Image%20Apr%2024,%202026,%2012_56_09%20PM.png" alt="Anuranon Creations Logo" style="width:220px;max-width:100%;height:auto;display:block;margin:0 auto 15px;">
 <h2>PAYMENT INVOICE</h2>
+<div class="payment-stamp ${stampClass}">
+${paymentStatus}
+</div>
 </div>
 
 
