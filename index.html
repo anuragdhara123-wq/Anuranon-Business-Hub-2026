@@ -310,6 +310,27 @@ border-color:#e4c477;
 color:#ed7777;
 border-color:#ed7777;
 }
+.signature-section{
+display:flex;
+justify-content:space-between;
+gap:40px;
+margin-top:65px;
+text-align:center;
+}
+
+.signature-box{
+flex:1;
+padding-top:45px;
+border-top:1px solid #c6a45c;
+color:#e4c477;
+font-weight:bold;
+}
+
+@media(max-width:600px){
+.signature-section{
+gap:20px;
+}
+}
 @media print{
 html,body{
 background:#11100e!important;
@@ -367,7 +388,15 @@ ${payments.map(x=>`<tr><td>Additional Payment (${x[2]})</td><td>₹${Number(x[1]
 <div class="footer">
 <p>Thank you for choosing Anuranon Creations!</p>
 <p>We look forward to capturing your beautiful moments.</p>
-<p><b>Authorized Signature</b></p>
+<div class="signature-section">
+<div class="signature-box">
+Client's Signature
+</div>
+<div class="signature-box">
+Authorized Signature<br>
+Anuranon Creations
+</div>
+</div>
 </div>
 <button onclick="window.print()">Print / Save as PDF</button>
 </body>
